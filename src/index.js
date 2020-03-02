@@ -12,64 +12,92 @@ let addToy = false
 //       toyForm.style.display = 'none'
 //     }
 //   })
-
 // })
-
-
 
 document.addEventListener("DOMContentLoaded", () => {
 
   fetch(`http://localhost:3000/toys`)
   .then(resp => resp.json())
-  .then(toyData => renderToys(toyData))
+  .then(toyData => parseToys(toyData))
 
-    renderToys = (toyData) => {
-      let toyCollection = document.getElementById("toy-collection")
+  parseToys = (toyData) => {
+    toyData.forEach(toy => renderToys(toy)
+  )}
 
-      toyData.forEach(toy => { 
-        let toyDiv = document.createElement("div") 
-        toyDiv.className = "card"
-        toyDiv.innerHTML = `
-          <h2>${toy.name}</h2> 
-          <img src=${toy.image} class="toy-avatar" />
-          <p>${toy.likes} Likes </p>
-          <button class="like-btn">Like <3</button>
-        `
-        toyCollection.appendChild(toyDiv)
+  renderToys = (toy) => {
+    let toyCollection = document.getElementById("toy-collection")
+
+    let toyDiv = document.createElement("div") 
+      toyDiv.className = "card"
+      toyDiv.innerHTML = `
+        <h2>${toy.name}</h2> 
+        <img src=${toy.image} class="toy-avatar" />
+      `
+
+      let p = document.createElement("p")
+      p.innerText = `${toy.likes} Likes`
+
+      let likeBtn = document.createElement("button")
+      likeBtn.className = "like-btn"
+      likeBtn.innerText = "Likes <3"
+      likeBtn.setAttribute("id", toy.id) 
+      toyDiv.appendChild(p)
+      toyDiv.appendChild(likeBtn)
+
+      likeBtn.addEventListener("click", (e) => {
+        increaseLikes(e, toy)
+      })
+  
+      toyCollection.appendChild(toyDiv)
+
+  }
+
+  increaseLikes = (e, toy) => {
+    console.log(e.target.previousSibling)
+    let likesPara = e.target.previousSibling
+    likesPara.innerText = ""
+    likesPara.innerText = `${toy.likes ++} likes`
+  }
+
+    let button = document.getElementById("new-toy-btn")
+    let form = document.querySelector(".container")
+
+    button.addEventListener("click", () => {
+      addToy = !addToy
+      if (addToy){
+        form.style.display = "block"
+      } else {
+        form.style.display = "none"
+      }
+    })    
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault()
+      renderToys({
+        name: e.target.name.value,
+        image: e.target.image.value,
+        likes: "0"
+      })
+      postNewToy(e.target)
+    })
+
+    postNewToy = (toyObject) => {
+      fetch(`http://localhost:3000/toys`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify({
+          "name": toyObject.name.value,
+          "image": toyObject.image.value,
+          "likes": 0
+        })
       })
     }
 
-      let button = document.getElementById("new-toy-btn")
-      let form = document.querySelector(".container")
 
-      button.addEventListener("click", () => {
-        addToy = !addToy
-        if (addToy){
-          form.style.display = "block"
-        } else {
-          form.style.display = "none"
-        }
-
-      })    
+  
 
 
-
-    postNewToy = () => {
-      fetch(`http://localhost:3000/toys`, {
-
-        headers: 
-        {
-          "Content-Type": "application/json",
-          Accept: "application/json"
-        }
-        
-        body: JSON.stringify({
-          "name": "Jessie",
-          "image": "https://vignette.wikia.nocookie.net/p__/images/8/88/Jessie_Toy_Story_3.png/revision/latest?cb=20161023024601&path-prefix=protagonist",
-          "likes": 0
-      }
-      )
-
-    }
-
-})
+})//end DOM content loaded
