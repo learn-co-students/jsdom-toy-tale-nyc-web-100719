@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <h2>${toy.name}</h2> 
         <img src=${toy.image} class="toy-avatar" />
       `
-
+      
       let p = document.createElement("p")
       p.innerText = `${toy.likes} Likes`
 
@@ -89,9 +89,9 @@ document.addEventListener("DOMContentLoaded", () => {
           Accept: "application/json"
         },
         body: JSON.stringify({
-          "name": toyObject.name.value,
-          "image": toyObject.image.value,
-          "likes": 0
+          name: toyObject.name.value,
+          image: toyObject.image.value,
+          likes: 0
         })
       })
     }
